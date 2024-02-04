@@ -8,6 +8,8 @@ public class InverseKinematic : MonoBehaviour
     [SerializeField] private float _delta = 0.001f;
     [SerializeField] private Transform _target;
     
+    private Transform _pole;
+    
     private Transform[] _vertices;
     private Vector3[] _positions;
     private float[] _verticesDistances;
@@ -32,11 +34,13 @@ public class InverseKinematic : MonoBehaviour
                 _totalLength += _verticesDistances[i];
             }
             
-            current = current.parent;
+            if(current.parent.transform.tag.Equals("Joints")) current = current.parent;
         }
     }
 
     private void Awake() {
+        // Pole is the first child of the target game object
+        _pole = _target.GetChild(0);
         Init();
     }
     
@@ -87,6 +91,18 @@ public class InverseKinematic : MonoBehaviour
                 if((_positions[_positions.Length - 1] - _target.position).sqrMagnitude < _delta * _delta) {
                     break;
                 }
+            }
+        }
+        
+        // Move towards pole
+        if(_pole != null) {
+            for(int i = 1; i < _positions.Length - 1; i++) {
+                Plane plane = new Plane(_positions[i+1] - _positions[i-1], _positions[i-1]);
+                Vector3 projectedPole = plane.ClosestPointOnPlane(_pole.position);
+                Vector3 projectedBone = plane.ClosestPointOnPlane(_positions[i]);
+                
+                float angle = Vector3.SignedAngle(projectedBone - _positions[i-1], projectedPole - _positions[i-1], plane.normal);
+                _positions[i] = Quaternion.AngleAxis(angle, plane.normal) * (_positions[i] - _positions[i-1]) + _positions[i-1];
             }
         }
         

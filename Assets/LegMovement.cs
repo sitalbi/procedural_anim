@@ -14,8 +14,8 @@ public class LegMovement : MonoBehaviour
 
     private void Awake()
     {
-        transform.position = leg.position;
         newPos = target.position;
+        transform.position = newPos;
     }
 
     // Update is called once per frame
