@@ -121,7 +121,7 @@ public class InverseKinematic : MonoBehaviour
     private void OnDrawGizmos() {
         Transform current = this.transform;
         int cpt = 0;
-        while(cpt < _chainLength && current != null && current.parent != null) {
+        while(cpt < _chainLength && current != null && current.parent.transform.tag.Equals("Joints")) {
             float scale = Vector3.Distance(current.position, current.parent.position) * 0.1f;
             Handles.matrix = Matrix4x4.TRS(current.position, Quaternion.FromToRotation(Vector3.up, current.parent.position - current.position), new Vector3(scale, Vector3.Distance(current.position, current.parent.position), scale));
             Handles.color = Color.green;
