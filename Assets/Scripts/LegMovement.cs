@@ -5,10 +5,12 @@ using UnityEngine;
 
 public class LegMovement : MonoBehaviour
 {
-    [SerializeField] private Transform leg, target;
+    [SerializeField] private Transform target;
     [SerializeField] private float distanceDelta = 1f;
     [SerializeField] private float stepHeight = 1f, speed = 10f;
+    [SerializeField] private LegMovement oppositeLeg;
 
+    [NonSerialized] public bool isMoving;
     private float lerp;
     private Vector3 newPos, currentPosition, oldPos;
 
@@ -28,12 +30,14 @@ public class LegMovement : MonoBehaviour
     private void CheckDistance()
     {
         float distance = Vector3.Distance(newPos, target.position);
-        if (distance > distanceDelta) {
+        if (distance > distanceDelta && !oppositeLeg.isMoving) {
             lerp = 0;
             newPos = target.position;
+            
         }
 
         if (lerp<1) {
+            isMoving = true;
             Vector3 pos = Vector3.Lerp(oldPos, newPos, lerp);
             pos.y += Mathf.Sin(lerp * Mathf.PI) * stepHeight;
             
@@ -42,6 +46,7 @@ public class LegMovement : MonoBehaviour
         }
         else {
             oldPos = newPos;
+            isMoving = false;
         }
     }
 }
