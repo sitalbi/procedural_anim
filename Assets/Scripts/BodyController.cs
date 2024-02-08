@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class BodyController : MonoBehaviour
 {
-    [SerializeField] public float speed = 5f;
+
+    [SerializeField] private float offset = 0.5f;
+    [SerializeField] private float speed = 4f;
     
     private List<Transform> targetTransforms;
     private float medianYPosition;
@@ -25,6 +27,7 @@ public class BodyController : MonoBehaviour
     
     void FixedUpdate() {
         BodyPosition();
+        BodyRotation();
     }
     
     /**
@@ -39,10 +42,26 @@ public class BodyController : MonoBehaviour
             medianYPosition += t.position.y;
         }
         medianYPosition /= targetTransforms.Count;
-        medianYPosition -= 0.5f; // Adjust the median pos with an arbitrary offset (might need to modify this)
+        medianYPosition -= offset; // Adjust the median pos with an arbitrary offset (might need to modify this)
         
         bodyPosition = new Vector3(transform.position.x + speed * Time.deltaTime, originalBodyPosition.y + medianYPosition, transform.position.z);
         transform.position = bodyPosition;
+    }
+
+    private void BodyRotation() {
+        // Calculate the difference between the highest and lowest y position of the targets 
+        // and the sign of the difference (positive or negative) whether the max is on the front or back of the body
+        Vector3 maxY = Vector3.negativeInfinity;
+        Vector3 minY = Vector3.positiveInfinity;
+        foreach (Transform t in targetTransforms) {
+            if(t.position.y > maxY.y) maxY = t.position;
+            if(t.position.y < minY.y) minY = t.position;
+        }
+        float yDiff = maxY.y - minY.y;
+        float sign = maxY.x - minY.x > 0 ? 1 : -1;
+        
+        // Rotate the body based on the difference
+        transform.rotation = Quaternion.Euler(0, 0, yDiff * sign * 20);
     }
 
     private void OnCollisionEnter(Collision collision) {

@@ -35,7 +35,7 @@ public class TargetPosManager : MonoBehaviour
     private void CalculateYPosition() {
         // Use a downward raycast to find the ground (ground tag) and set the target position to the closest hit point (hits[hits.Length - 1])
         RaycastHit hit;
-        Vector3 rayOrigin = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
+        Vector3 rayOrigin = new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z);
         Physics.Raycast(rayOrigin, Vector3.down, out hit, 10f, LayerMask.GetMask("Ground"));
         transform.position = new Vector3(transform.position.x, hit.point.y, transform.position.z);
         
