@@ -10,7 +10,7 @@ public class BodyController : MonoBehaviour
     [SerializeField] private float speed = 4f;
     
     private List<Transform> targetTransforms;
-    private float medianYPosition;
+    private float medianYPosition, rotationAngle = 0f;
     private Vector3 bodyPosition, originalBodyPosition;
 
     void Awake()
@@ -27,12 +27,12 @@ public class BodyController : MonoBehaviour
     
     void FixedUpdate() {
         BodyPosition();
-        BodyRotation();
+        //BodyRotation();
     }
     
     /**
      * Calculate the body position.
-     * X position updated with a constant speed
+     * X,Z position updated with a constant speed
      * Y position updated with the average y position of the targets
      */
     private void BodyPosition() {
@@ -43,10 +43,16 @@ public class BodyController : MonoBehaviour
         }
         medianYPosition /= targetTransforms.Count;
         medianYPosition -= offset; // Adjust the median pos with an arbitrary offset (might need to modify this)
-        
-        bodyPosition = new Vector3(transform.position.x + speed * Time.deltaTime, originalBodyPosition.y + medianYPosition, transform.position.z);
+
+        // Calculate the movement direction based on transform.right
+        Vector3 movementDirection = transform.right * speed * Time.deltaTime;
+    
+        // Update the body position
+        bodyPosition = transform.position + movementDirection;
+        bodyPosition.y = originalBodyPosition.y + medianYPosition; // Keep the y-position same as the original
         transform.position = bodyPosition;
     }
+
 
     private void BodyRotation() {
         // Calculate the difference between the highest and lowest y position of the targets 
@@ -61,13 +67,17 @@ public class BodyController : MonoBehaviour
         float sign = maxY.x - minY.x > 0 ? 1 : -1;
         
         // Rotate the body based on the difference
-        transform.rotation = Quaternion.Euler(0, 0, yDiff * sign * 20);
+        transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, yDiff * sign * 20);
     }
 
     private void OnCollisionEnter(Collision collision) {
-        Debug.Log("Collision with " + collision.gameObject.name);
         if(collision.gameObject.tag.Equals("Obstacle")) {
             speed = -speed;
         }
+    }
+
+    private void OnDrawGizmos() {
+        // Draw a raycast in front of the body
+        Debug.DrawRay(transform.position, transform.right * 5f, Color.red);
     }
 }

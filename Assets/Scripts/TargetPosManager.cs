@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class TargetPosManager : MonoBehaviour
 {
-    [SerializeField] private Transform node;
+    [SerializeField] private Transform node, body;
 
     private bool xDirection;
+    private float nodeX, targetX;
     
     
-    void Start()
+    void Awake()
     {
-        xDirection = node.position.x > transform.position.x;
+        nodeX = Vector3.Dot(node.position, body.right);
+        targetX = Vector3.Dot(transform.position, body.right);
+        xDirection = nodeX > targetX;
     }
 
     // Update is called once per frame
@@ -22,15 +25,22 @@ public class TargetPosManager : MonoBehaviour
     }
 
     private void CheckXDirection() {
-        // if the node is in front of this x, inverse the position x
-        if (node.position.x > transform.position.x && !xDirection) {
+        // Calculate the position of the node and target relative to the body's right axis
+        nodeX = Vector3.Dot(node.position, body.right);
+        targetX = Vector3.Dot(transform.position, body.right);
+
+        // Compare the positions on the body's right axis
+        if (nodeX > targetX && !xDirection) {
+            // Mirror the local position along the body's right axis
             transform.localPosition = new Vector3(-transform.localPosition.x, transform.localPosition.y, transform.localPosition.z);
             xDirection = true;
-        } else if (node.position.x < transform.position.x && xDirection) {
+        } else if (nodeX < targetX && xDirection) {
+            // Mirror the local position along the body's right axis
             transform.localPosition = new Vector3(-transform.localPosition.x, transform.localPosition.y, transform.localPosition.z);
             xDirection = false;
         }
     }
+
 
     private void CalculateYPosition() {
         // Use a downward raycast to find the ground (ground tag) and set the target position to the closest hit point (hits[hits.Length - 1])
@@ -41,5 +51,10 @@ public class TargetPosManager : MonoBehaviour
         
         // Draw the raycast for debugging purposes
         Debug.DrawRay(rayOrigin, Vector3.down * 10f, Color.red);
+    }
+    
+    private void OnDrawGizmos() {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, 0.2f);
     }
 }
