@@ -7,7 +7,7 @@ public class LegMovement : MonoBehaviour
 {
     [SerializeField] private Transform target;
     [SerializeField] private float distanceDelta = 1f;
-    [SerializeField] private float stepHeight = 1f, speed = 10f;
+    [SerializeField] private float stepHeight = 1f, speed = 5f;
     [SerializeField] private LegMovement oppositeLeg;
 
     [NonSerialized] public bool isMoving;

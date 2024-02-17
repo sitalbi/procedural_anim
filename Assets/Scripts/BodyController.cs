@@ -17,8 +17,9 @@ public class BodyController : MonoBehaviour
     {
         targetTransforms = new List<Transform>();
         foreach (Transform t in GetComponentsInChildren<Transform>()) {
-            if(t.name.Contains("Target")) {
+            if(t.CompareTag("Target")) {
                 targetTransforms.Add(t);
+                Debug.Log(t.name);
             }
         }
         originalBodyPosition = transform.position;
@@ -27,7 +28,7 @@ public class BodyController : MonoBehaviour
     
     void FixedUpdate() {
         BodyPosition();
-        //BodyRotation();
+        BodyRotation();
     }
     
     /**

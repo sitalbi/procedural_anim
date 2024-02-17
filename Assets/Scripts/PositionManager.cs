@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LegPosition : MonoBehaviour
+public class PositionManager : MonoBehaviour
 {
-    [SerializeField] private Transform _legPosition;
+    [SerializeField] private Transform _pos;
     
     // Start is called before the first frame update
     void Start()
@@ -15,6 +15,6 @@ public class LegPosition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.position = _legPosition.position;
+        transform.position = _pos.position;
     }
 }
